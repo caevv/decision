@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decisão de Moradia OJZ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .tree {
+            display: flex;
+            justify-content: center;
+        }
+        .node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+        .content {
+            padding: 10px;
+            border: 1px solid #d1d9e6;
+            border-radius: 8px;
+            background-color: #ffffff;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .content:hover {
+            background-color: #e9ecef;
+        }
+        .children {
+            display: flex;
+            justify-content: center;
+        }
+        .pros-cons {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            border: 1px solid #d1d9e6;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .pros-cons h4 {
+            margin: 5px 0;
+            color: #495057;
+        }
+        .pros-cons ul {
+            margin: 5px 0;
+            padding-left: 20px;
+            color: #6c757d;
+        }
+        .root {
+            font-weight: bold;
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="tree" id="decisionTree"></div>
+
+    <script>
+        const treeData = {
+            name: "Decisão de Moradia OJZ",
+            children: [
+                {
+                    name: "Continuar aqui",
+                    children: [
+                        {
+                            name: "Construir",
+                            pros: [
+                                "Potencial de vender com lucro se mudar para o exterior em um ano",
+                                "Personalizado de acordo com suas preferências"
+                            ],
+                            cons: [
+                                "Estresse da construção e investimento de tempo",
+                                "Pode não estar completo a tempo"
+                            ]
+                        },
+                        {
+                            name: "Não Construir",
+                            pros: [
+                                "Sem investimento financeiro adicional",
+                                "Flexibilidade para se mudar para o exterior facilmente"
+                            ],
+                            cons: [
+                                "Perder oportunidade potencial de investimento",
+                                "Casa atual pode não atender todas as suas necessidades"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Sair",
+                    children: [
+                        {
+                            name: "Construir -> Alugar",
+                            pros: [
+                                "Construindo um ativo para potencial venda futura",
+                                "Solução de moradia temporária durante a construção"
+                            ],
+                            cons: [
+                                "Despesas duplas (aluguel + custos de construção)",
+                                "Estresse de gerenciar a construção enquanto mora em outro lugar"
+                            ]
+                        },
+                        {
+                            name: "Alugar -> Construir",
+                            pros: [
+                                "Flexibilidade para se mudar para o exterior facilmente",
+                                "Tempo para planejar a construção cuidadosamente"
+                            ],
+                            cons: [
+                                "Pagando aluguel sem construir patrimônio",
+                                "Potencial aumento nos custos de construção ao longo do tempo"
+                            ]
+                        },
+                        {
+                            name: "Comprar",
+                            pros: [
+                                "Solução pronta para morar imediatamente",
+                                "Construindo patrimônio imediatamente"
+                            ],
+                            cons: [
+                                "Menos flexibilidade se mudar para o exterior em um ano",
+                                "Potencial dificuldade em vender rapidamente se necessário"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        function createNode(nodeData, isRoot = false) {
+            const node = document.createElement('div');
+            node.className = 'node';
+
+            const content = document.createElement('div');
+            content.className = 'content';
+            if (isRoot) content.classList.add('root');
+            content.textContent = nodeData.name;
+            node.appendChild(content);
+
+            if (nodeData.children && nodeData.children.length > 0) {
+                const children = document.createElement('div');
+                children.className = 'children';
+                children.style.display = 'none';
+
+                nodeData.children.forEach(childData => {
+                    children.appendChild(createNode(childData));
+                });
+
+                node.appendChild(children);
+
+                content.addEventListener('click', () => {
+                    children.style.display = children.style.display === 'none' ? 'flex' : 'none';
+                });
+            } else {
+                const prosCons = document.createElement('div');
+                prosCons.className = 'pros-cons';
+                
+                const prosTitle = document.createElement('h4');
+                prosTitle.textContent = 'Prós:';
+                prosCons.appendChild(prosTitle);
+
+                const prosList = document.createElement('ul');
+                nodeData.pros.forEach(pro => {
+                    const li = document.createElement('li');
+                    li.textContent = pro;
+                    prosList.appendChild(li);
+                });
+                prosCons.appendChild(prosList);
+
+                const consTitle = document.createElement('h4');
+                consTitle.textContent = 'Contras:';
+                prosCons.appendChild(consTitle);
+
+                const consList = document.createElement('ul');
+                nodeData.cons.forEach(con => {
+                    const li = document.createElement('li');
+                    li.textContent = con;
+                    consList.appendChild(li);
+                });
+                prosCons.appendChild(consList);
+
+                node.appendChild(prosCons);
+
+                content.addEventListener('click', () => {
+                    prosCons.style.display = prosCons.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+
+            return node;
+        }
+
+        const treeContainer = document.getElementById('decisionTree');
+        treeContainer.appendChild(createNode(treeData, true));
+    </script>
+</body>
+</html>
